@@ -1,0 +1,185 @@
+/* Updated CSS styles to resemble LinkedIn design */
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.new-post {
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: calc(100% - 40px);
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  resize: none;
+}
+
+input[type="file"] {
+  width: calc(100% - 40px);
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #0073b1; /* LinkedIn Blue */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 15px 32px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #004471; /* Darker shade of LinkedIn Blue on hover */
+}
+
+.posts {
+  margin-top: 20px;
+}
+
+.post {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post p {
+  margin-bottom: 10px;
+  /* color: #333; Text color for posts */
+}
+
+.post img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 10px;
+  display: block; /* Ensure the image is a block element */
+  margin-left: auto; /* Center the image horizontally */
+  margin-right: auto; /* Center the image horizontally */
+}
+
+
+/* .notifications {
+  margin-top: 20px;
+  position: relative;
+} */
+
+.notification-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #0073b1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.notification-button:hover {
+  background-color: #004471;
+}
+
+.username {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0073b1; /* LinkedIn Blue */
+  margin-bottom: 5px;
+}
+
+.post-text {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  color: #333; /* Text color */
+}
+
+
+.notifications-container {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.notification-button {
+  background-color: #0073b1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.notification-button:hover {
+  background-color: #004471;
+}
+
+.notifications-heading {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.notification-list-ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-item {
+  margin-bottom: 1rem;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.notification-item:hover {
+  background-color: #f0f0f0;
+}
+
+.notification-text {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.notification-datetime {
+  font-size: 1rem;
+  color: #888888;
+  margin: 0;
+}
+
+.no-notifications {
+  font-size: 1.2rem;
+  color: #888888;
+}
