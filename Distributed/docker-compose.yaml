@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx_container
+    ports:
+      - "80:80"
+    networks:
+      - amar_network
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - user_service
+
+  user_service:
+    build:
+      context: ./user_service
+    container_name: user_service_container
+    ports:
+      - "8000:8000"
+    networks:
+      - amar_network
+    depends_on:
+      - user_db
+    environment:
+      DATABASE_URL: postgresql://postgres:1234@user_db:5432/User
+    volumes:
+      - ./wait-for-postgres.sh:/app/wait-for-postgres.sh  # Mount the script into the container
+    command: ["./wait-for-postgres.sh", "user_db", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  user_db:
+    image: postgres:16.0
+    container_name: user_db_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: User
+    ports:
+      - "5432:5432"
+    networks:
+      - amar_network
+    volumes:
+      - ./init/user_service_init.sql:/docker-entrypoint-initdb.d/user_service_init.sql
+      - user_db_data:/var/lib/postgresql/data
+
+volumes:
+  user_db_data:
+
+networks:
+  amar_network:
+    driver: bridge
+    external: true
