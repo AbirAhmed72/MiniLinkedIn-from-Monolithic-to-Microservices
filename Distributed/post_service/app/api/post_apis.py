@@ -2,6 +2,7 @@
 import base64
 from datetime import timedelta
 import io, httpx
+from fastapi.responses import JSONResponse
 import os
 from typing import List
 import uuid
@@ -13,6 +14,10 @@ from minio import Minio
 from datetime import datetime, timedelta, time
 from dotenv import load_dotenv
 
+user_service_base_url = "http://user_service:8000"
+post_service_base_url = "http://post_service:8001"
+notification_service_base_url = "http://notification_service:8002"
+minio_base_url = "http://minio:9000"
 
 
 post = APIRouter()
@@ -35,64 +40,101 @@ minio_client = Minio(
 @post.post('/post')
 async def create_post(post_text: str = Form(...), image: UploadFile = File(None), token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
 
-    user_info = await services.get_user_info(token)
-    username = user_info["username"]
-    print(username)
-    image_url = None
-    if image:
-        # Generate a unique filename for the image
-        image_filename = f"{username}_{uuid.uuid4().hex}.jpg"
-        # print(image_filename)
+    try:
+        user_info = await services.get_user_info(token)
+        username = user_info["username"]
+        print(username)
+        image_url = None
+        if image:
+            # Generate a unique filename for the image
+            image_filename = f"{username}_{uuid.uuid4().hex}.jpg"
+            # print(image_filename)
 
-        # Save the image to bytes and send to MinIO bucket
-        image_bytes = await image.read()
+            # Save the image to bytes and send to MinIO bucket
+            image_bytes = await image.read()
 
-        minio_client.put_object(
-            "minilinkedindistributed",
-            image_filename,
-            io.BytesIO(image_bytes),  
-            length=len(image_bytes),
-            content_type="image/jpeg"
-        )
+            bucket_name = 'minilinkedindistributed'
 
-        # Construct the image URL based on MinIO server URL and bucket name
-        image_url = f"http://127.0.0.1:9000/minilinkedindistributed/{image_filename}"
-        print(image_url)
-    elif image is None or image.filename == '':
-        raise HTTPException(status_code=400, detail='Invalid or empty image file')
-    # Create the post
-    new_post = services.make_post(db, username, post_text, image_url)
+            if(minio_client.bucket_exists(bucket_name)):
 
-    headers = {"Authorization": f"Bearer {token}"}
+                minio_client.put_object(
+                    "minilinkedindistributed",
+                    image_filename,
+                    io.BytesIO(image_bytes),  
+                    length=len(image_bytes),
+                    content_type="image/jpeg"
+                )
+            
+                # Construct the image URL based on MinIO server URL and bucket name
+                image_url = f"{minio_base_url}/minilinkedindistributed/{image_filename}"
+                print(image_url)
 
-    # Get all users (except the one who posted)
-    async with httpx.AsyncClient() as client:
-        response = await client.get("http://127.0.0.1:8000/api/v1/all_users_except_poster", headers=headers)
+            else:
 
-    if response.status_code == 200:
-        all_users_except_poster = response.json()
-    else:
-        raise HTTPException(status_code=response.status_code, detail="Failed to fetch users from user service")
+                try:
+                    minio_client.make_bucket("minilinkedindistributed")
+                except Exception as e:
+                    raise HTTPException(status_code=500, detail=f"Failed to create bucket: {str(e)}")
+            
+                try:
+                    minio_client.set_bucket_policy("minilinkedindistributed", 
+                        policy='{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":"*","Action":["s3:GetObject","s3:PutObject"],"Resource":["arn:aws:s3:::minilinkedindistributed/*"]}]}'
+                    )
+                except Exception as e:
+                    raise HTTPException(status_code=500, detail=f"Failed to set bucket policy: {str(e)}")
 
-    # Create a notification for each user
-    for user_to_notify in all_users_except_poster:
-        notification_data = {
-            'notification_text': f"{username} made a new post...",
-            'pid' : new_post.id,
-            'username' : user_to_notify["username"],
-            'notification_datetime' : datetime.utcnow().isoformat(),
-            'is_read' : False
-        }
+                minio_client.put_object(
+                    "minilinkedindistributed",
+                    image_filename,
+                    io.BytesIO(image_bytes),  
+                    length=len(image_bytes),
+                    content_type="image/jpeg"
+                )
+            
+                # Construct the image URL based on MinIO server URL and bucket name
+                image_url = f"{minio_base_url}/minilinkedindistributed/{image_filename}"
+                print(image_url)
+            
+        elif image is None or image.filename == '':
+            # raise HTTPException(status_code=400, detail='Invalid or empty image file')
+            new_post = services.make_post(db, username, post_text, 'no_image')
+        # Create the post
+        new_post = services.make_post(db, username, post_text, image_url)
 
-        
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Get all users (except the one who posted)
         async with httpx.AsyncClient() as client:
-            response = await client.post("http://127.0.0.1:8002/api/v1/notification", json=notification_data, headers=headers)
+            response = await client.get(f"{user_service_base_url}/api/v1/all_users_except_poster", headers=headers)
 
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Failed to send notification")
+        if response.status_code == 200:
+            all_users_except_poster = response.json()
+        else:
+            raise HTTPException(status_code=response.status_code, detail="Failed to fetch users from user service")
+
+        # Create a notification for each user
+        for user_to_notify in all_users_except_poster:
+            notification_data = {
+                'notification_text': f"{username} made a new post...",
+                'pid' : new_post.id,
+                'username' : user_to_notify["username"],
+                'notification_datetime' : datetime.utcnow().isoformat(),
+                'is_read' : False
+            }
+
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(f"{notification_service_base_url}/api/v1/notification", json=notification_data, headers=headers)
+
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail="Failed to send notification")
+        
+
+        return{"message" : new_post}
     
-
-    return{"message" : new_post}
+    except Exception as e:
+        print(f"Error: {str(e)}")  # Log the error for debugging
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @post.get('/post', response_model=List[schemas.PostData])

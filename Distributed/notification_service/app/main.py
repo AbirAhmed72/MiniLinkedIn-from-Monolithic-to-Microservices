@@ -5,6 +5,11 @@ from app.api.notification_apis import notification
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from .api import services, database
+
+# user_service_base_url = "http://user_service:8000"
+# post_service_base_url = "http://post_service:8001"
+# notification_service_base_url = "http://notification_service:8002"
+
 app = FastAPI(openapi_url="/api/v1/notification/openapi.json", docs_url="/api/v1/notification/docs")
 
 app.add_middleware(

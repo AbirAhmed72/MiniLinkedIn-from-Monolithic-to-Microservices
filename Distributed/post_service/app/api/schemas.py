@@ -13,7 +13,7 @@ class PostCreate(BaseModel):
 
 class PostData(BaseModel):
     post_text: str
-    image_url: str = None
+    image_url: Optional[str] = None
     post_datetime: float
     # post_datetime: datetime
     username: str

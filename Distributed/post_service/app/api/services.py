@@ -10,6 +10,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import Session
 import httpx
 
+user_service_base_url = "http://user_service:8000"
+post_service_base_url = "http://post_service:8001"
+notification_service_base_url = "http://notification_service:8002"
 
 credentials_exception = HTTPException(
         status_code=401,
@@ -18,7 +21,6 @@ credentials_exception = HTTPException(
     )
 
 async def get_user_info(token: str):
-    user_service_base_url = "http://127.0.0.1:8000"  # Replace with the actual URL of your user service
     headers = {"Authorization": f"Bearer {token}"}
     print("Request Headers:", headers) 
     async with httpx.AsyncClient() as client:
@@ -29,20 +31,6 @@ async def get_user_info(token: str):
         else:
             # Handle authentication error
             raise HTTPException(status_code=response.status_code, detail="Authentication error")
-
-async def post_notification(token: str):
-    notification_service_base_url = "http://127.0.0.1:8002"  # Replace with the actual URL of your user service
-    headers = {"Authorization": f"Bearer {token}"}
-    print("Request Headers:", headers) 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"{user_service_base_url}/api/v1/me", headers=headers)
-        if response.status_code == 200:
-            user_info = response.json()
-            return user_info
-        else:
-            # Handle authentication error
-            raise HTTPException(status_code=response.status_code, detail="Authentication error")
-
 
 
 def get_post_by_pid(db: Session, pid: int):

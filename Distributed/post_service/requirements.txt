@@ -27,3 +27,6 @@ passlib
 bcrypt
 psycopg2-binary
 python-dotenv
+httpx
+minio==7.1.15
+apscheduler
