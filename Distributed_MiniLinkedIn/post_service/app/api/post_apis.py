@@ -66,7 +66,7 @@ async def create_post(post_text: str = Form(...), image: UploadFile = File(None)
                 )
             
                 # Construct the image URL based on MinIO server URL and bucket name
-                image_url = f"{MINIO_ENDPOINT}:9000/minilinkedindistributed/{image_filename}"
+                image_url = f"http://localhost:9000/minilinkedindistributed/{image_filename}"
                 print(image_url)
 
             else:
@@ -92,7 +92,7 @@ async def create_post(post_text: str = Form(...), image: UploadFile = File(None)
                 )
             
                 # Construct the image URL based on MinIO server URL and bucket name
-                image_url = f"{MINIO_ENDPOINT}:9000/minilinkedindistributed/{image_filename}"
+                image_url = f"http://localhost:9000/minilinkedindistributed/{image_filename}"
                 print(image_url)
             
         elif image is None or image.filename == '':

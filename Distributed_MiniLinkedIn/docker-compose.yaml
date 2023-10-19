@@ -3,14 +3,15 @@ version: '3.8'
 services:
 
   nginx:
-    build:
-      context: ./nginx
+    # build:
+    #   context: ./nginx
+    image: abir29/distributed_minilinkedin-nginx
     container_name: nginx_container
     ports:
       - "80:80"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     volumes:
       - ./mini-linkedin-final-frontend/build:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
@@ -18,17 +19,18 @@ services:
       - user_service
       - post_service
       - notification_service
-      # - frontend_service ##fahad rakhenai
+      # - frontend_service 
 
   user_service:
-    build:
-      context: ./user_service
+    # build:
+    #   context: ./user_service
+    image: abir29/distributed_minilinkedin-user_service
     container_name: user_service_container
     ports:
       - "8000:8000"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     depends_on:
       - user_db
     environment:
@@ -47,21 +49,22 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     volumes:
       - ./init/user_service_init.sql:/docker-entrypoint-initdb.d/user_service_init.sql
       - user_db_data:/var/lib/postgresql/data
 
   post_service:
-    build:
-      context: ./post_service
+    # build:
+    #   context: ./post_service
+    image: abir29/distributed_minilinkedin-post_service
     container_name: post_service_container
     ports:
       - "8001:8001"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     depends_on:
       - post_db
       # - user_db
@@ -85,21 +88,22 @@ services:
     ports:
       - "5433:5432"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     volumes:
       - ./init/post_service_init.sql:/docker-entrypoint-initdb.d/post_service_init.sql
       - post_db_data:/var/lib/postgresql/data
 
   notification_service:
-    build:
-      context: ./notification_service
+    # build:
+    #   context: ./notification_service
+    image: abir29/distributed_minilinkedin-notification_service
     container_name: notification_service_container
     ports:
       - "8002:8002"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     depends_on:
       - notification_db
     environment:
@@ -118,8 +122,8 @@ services:
     ports:
       - "5434:5432"
     restart: unless-stopped
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     volumes:
       - ./init/notification_service_init.sql:/docker-entrypoint-initdb.d/notification_service_init.sql
       - notification_db_data:/var/lib/postgresql/data
@@ -137,8 +141,8 @@ services:
       - MINIO_ROOT_PASSWORD=12345678
       - MINIO_SECURE=False
 
-    networks:
-      - amar_network
+    # networks:
+    #   - amar_network
     command: server --console-address ":9001" /data
     # command: server --address 0.0.0.0:9000 /data
     volumes:
@@ -160,7 +164,7 @@ volumes:
   notification_db_data:
   minio_storage:
 
-networks:
-  amar_network:
-    driver: bridge
-    external: true
+# networks:
+#   amar_network:
+#     driver: bridge
+#     external: true
