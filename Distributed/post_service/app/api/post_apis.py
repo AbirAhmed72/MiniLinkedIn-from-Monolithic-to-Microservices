@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 user_service_base_url = "http://user_service:8000"
 post_service_base_url = "http://post_service:8001"
 notification_service_base_url = "http://notification_service:8002"
-minio_base_url = "http://minio:9000"
+# minio_base_url = "http://minio:9000"
 
 
 post = APIRouter()
@@ -25,15 +25,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "http://127.0.0.1:8000/api/v1/lo
 load_dotenv()
 
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER")
+MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 MINIO_SECURE = os.getenv("MINIO_SECURE").lower() == "true"
 
 # Initialize MinIO client
 minio_client = Minio(
     endpoint=MINIO_ENDPOINT,
-    access_key=MINIO_ACCESS_KEY,
-    secret_key=MINIO_SECRET_KEY,
+    access_key=MINIO_ROOT_USER,
+    secret_key=MINIO_ROOT_PASSWORD,
     secure=MINIO_SECURE
 )
 
@@ -66,7 +66,7 @@ async def create_post(post_text: str = Form(...), image: UploadFile = File(None)
                 )
             
                 # Construct the image URL based on MinIO server URL and bucket name
-                image_url = f"{minio_base_url}/minilinkedindistributed/{image_filename}"
+                image_url = f"{MINIO_ENDPOINT}:9000/minilinkedindistributed/{image_filename}"
                 print(image_url)
 
             else:
@@ -92,7 +92,7 @@ async def create_post(post_text: str = Form(...), image: UploadFile = File(None)
                 )
             
                 # Construct the image URL based on MinIO server URL and bucket name
-                image_url = f"{minio_base_url}/minilinkedindistributed/{image_filename}"
+                image_url = f"{MINIO_ENDPOINT}:9000/minilinkedindistributed/{image_filename}"
                 print(image_url)
             
         elif image is None or image.filename == '':

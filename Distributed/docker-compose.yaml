@@ -125,23 +125,24 @@ services:
       - notification_db_data:/var/lib/postgresql/data
 
   minio:
-    image: minio/minio:RELEASE.2023-07-18T17-49-40Z
+    image: minio/minio:latest
     container_name: minio_container
     ports:
       - "9000:9000"
-      # - "9050:9050"
+      - "9001:9001"
     restart: unless-stopped
     environment:
-      - MINIO_ENDPOINT=minio
+      # - MINIO_ENDPOINT=minio
       - MINIO_ROOT_USER=Abir
       - MINIO_ROOT_PASSWORD=12345678
       - MINIO_SECURE=False
 
     networks:
       - amar_network
-    command: server --address 0.0.0.0:9000 /data
+    command: server --console-address ":9001" /data
+    # command: server --address 0.0.0.0:9000 /data
     volumes:
-      - minio_data:/data
+      - minio_storage:/data
 
   # frontend_service:  # Frontend service configuration starts here
   #   build:
@@ -157,7 +158,7 @@ volumes:
   user_db_data:
   post_db_data:
   notification_db_data:
-  minio_data:
+  minio_storage:
 
 networks:
   amar_network:
