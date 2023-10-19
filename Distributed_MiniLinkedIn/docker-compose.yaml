@@ -3,9 +3,9 @@ version: '3.8'
 services:
 
   nginx:
-    build:
-      context: ./nginx
-    # image: abir29/distributed_minilinkedin-nginx
+    # build:
+    #   context: ./mini-linkedin-final-frontend
+    image: abir29/distributed_minilinkedin-nginx
     container_name: nginx_container
     ports:
       - "80:80"
@@ -22,9 +22,9 @@ services:
       # - frontend_service 
 
   user_service:
-    build:
-      context: ./user_service
-    # image: abir29/distributed_minilinkedin-user_service
+    # build:
+    #   context: ./user_service
+    image: abir29/distributed_minilinkedin-user_service
     container_name: user_service_container
     ports:
       - "8000:8000"
@@ -59,9 +59,9 @@ services:
       - user_db_data:/var/lib/postgresql/data
 
   post_service:
-    build:
-      context: ./post_service
-    # image: abir29/distributed_minilinkedin-post_service
+    # build:
+    #   context: ./post_service
+    image: abir29/distributed_minilinkedin-post_service
     container_name: post_service_container
     ports:
       - "8001:8001"
@@ -102,9 +102,9 @@ services:
       - post_db_data:/var/lib/postgresql/data
 
   notification_service:
-    build:
-      context: ./notification_service
-    # image: abir29/distributed_minilinkedin-notification_service
+    # build:
+    #   context: ./notification_service
+    image: abir29/distributed_minilinkedin-notification_service
     container_name: notification_service_container
     ports:
       - "8002:8002"

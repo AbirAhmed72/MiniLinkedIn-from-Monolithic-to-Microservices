@@ -16,7 +16,7 @@ RUN apt-get update \
 
 # Copy the requirements file into the container at /app
 COPY ./requirements.txt /app/
-COPY ../wait-for-postgres.sh /app/wait-for-postgres.sh
+# COPY ../wait-for-postgres.sh /app/wait-for-postgres.sh
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt \

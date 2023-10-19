@@ -4,7 +4,7 @@ FROM nginx:latest
 
 WORKDIR /var/www/html
 
-COPY ../mini-linkedin-final-frontend/build .
+COPY ./build .
 
 # Copy the custom nginx.conf file to the container
 COPY default.conf /etc/nginx/conf.d/default.conf

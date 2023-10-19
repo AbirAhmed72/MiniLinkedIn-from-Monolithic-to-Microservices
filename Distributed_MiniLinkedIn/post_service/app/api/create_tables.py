@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base # Replace with your actual module and model names
+from .models import Base # Replace with your actual module and model names
 from dotenv import load_dotenv
 
 load_dotenv()
