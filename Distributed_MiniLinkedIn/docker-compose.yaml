@@ -3,18 +3,18 @@ version: '3.8'
 services:
 
   nginx:
-    # build:
-    #   context: ./nginx
-    image: abir29/distributed_minilinkedin-nginx
+    build:
+      context: ./nginx
+    # image: abir29/distributed_minilinkedin-nginx
     container_name: nginx_container
     ports:
       - "80:80"
     restart: unless-stopped
     # networks:
     #   - amar_network
-    volumes:
-      - ./mini-linkedin-final-frontend/build:/var/www/html
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    # volumes:
+    #   - ./mini-linkedin-final-frontend/build:/var/www/html
+    #   - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - user_service
       - post_service
@@ -22,9 +22,9 @@ services:
       # - frontend_service 
 
   user_service:
-    # build:
-    #   context: ./user_service
-    image: abir29/distributed_minilinkedin-user_service
+    build:
+      context: ./user_service
+    # image: abir29/distributed_minilinkedin-user_service
     container_name: user_service_container
     ports:
       - "8000:8000"
@@ -35,6 +35,9 @@ services:
       - user_db
     environment:
       DATABASE_URL: postgresql://postgres:1234@user_db:5432/User
+      SECRET_KEY: e2c6a3bc1aad22372e102e8f9f657bccd65676aef94587815b9d4d2c4960a650
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
     # command: ["./wait-for-postgres.sh", "user_db", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     # volumes:
     #   - ./wait-for-postgres.sh:/app/wait-for-postgres.sh  # Mount the script into the container
@@ -52,13 +55,13 @@ services:
     # networks:
     #   - amar_network
     volumes:
-      - ./init/user_service_init.sql:/docker-entrypoint-initdb.d/user_service_init.sql
+      # - ./init/user_service_init.sql:/docker-entrypoint-initdb.d/user_service_init.sql
       - user_db_data:/var/lib/postgresql/data
 
   post_service:
-    # build:
-    #   context: ./post_service
-    image: abir29/distributed_minilinkedin-post_service
+    build:
+      context: ./post_service
+    # image: abir29/distributed_minilinkedin-post_service
     container_name: post_service_container
     ports:
       - "8001:8001"
@@ -74,6 +77,10 @@ services:
       #!!
     environment:
       DATABASE_URL: postgresql://postgres:1234@post_db:5432/Post
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ROOT_USER: Abir
+      MINIO_ROOT_PASSWORD: 12345678
+      MINIO_SECURE: False
     # command: ["./wait-for-postgres.sh", "post_db", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
     # volumes:
     #   - ./wait-for-postgres.sh:/app/wait-for-postgres.sh
@@ -91,13 +98,13 @@ services:
     # networks:
     #   - amar_network
     volumes:
-      - ./init/post_service_init.sql:/docker-entrypoint-initdb.d/post_service_init.sql
+      # - ./init/post_service_init.sql:/docker-entrypoint-initdb.d/post_service_init.sql
       - post_db_data:/var/lib/postgresql/data
 
   notification_service:
-    # build:
-    #   context: ./notification_service
-    image: abir29/distributed_minilinkedin-notification_service
+    build:
+      context: ./notification_service
+    # image: abir29/distributed_minilinkedin-notification_service
     container_name: notification_service_container
     ports:
       - "8002:8002"
@@ -125,7 +132,7 @@ services:
     # networks:
     #   - amar_network
     volumes:
-      - ./init/notification_service_init.sql:/docker-entrypoint-initdb.d/notification_service_init.sql
+      # - ./init/notification_service_init.sql:/docker-entrypoint-initdb.d/notification_service_init.sql
       - notification_db_data:/var/lib/postgresql/data
 
   minio:

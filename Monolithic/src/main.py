@@ -2,7 +2,7 @@
 import os
 import minio, uuid, io
 import joblib as jb
-import models, schemas, services, database
+import models, schemas, services, database, create_tables
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import List, Optional
@@ -13,7 +13,7 @@ from sqlalchemy.sql.sqltypes import Integer
 from schemas import TokenData
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-
+from create_tables import create_table
 from datetime import datetime, timedelta, time
 from jose import JWTError,jwt
 from minio import Minio
@@ -23,6 +23,12 @@ from datetime import datetime, timedelta
 # models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+@app.on_event("startup")
+def startup_event():
+    # Initialize database tables
+    create_table()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

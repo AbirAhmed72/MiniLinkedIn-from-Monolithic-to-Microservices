@@ -1,14 +1,20 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base # Replace with your actual module and model names
+from dotenv import load_dotenv
 
-SQL_DATABASE_URL = "postgresql://postgres:1234@localhost:5432/User"
+load_dotenv()
+
+# Get the DATABASE_URL from environment variables
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Replace 'your_database_url' with your actual PostgreSQL database URL
-engine = create_engine(SQL_DATABASE_URL)
+engine = create_engine(DATABASE_URL)
 
 # Create a session factory
-Session = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+def create_tables():
 # Create the tables based on your models
-Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
